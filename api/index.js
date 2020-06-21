@@ -118,7 +118,7 @@ router.post("/feed/:id", async function (req, res) {
 
     return responseServer(res, 200, {
         modifyResponse: {
-            posts: cards
+            posts: [...cards]
         }
     })
 });
