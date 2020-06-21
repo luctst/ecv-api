@@ -1,18 +1,20 @@
 const express = require("express");
-
-const parseBody = require("./utils/parseBody");
-const responseServer = require("./utils/responseServer");
-const mongo = require("./db/index");
 const {hash, compareSync} = require("bcrypt");
 const {randomFillSync} = require("crypto");
 const {sign} = require("jsonwebtoken");
+
+const parseBody = require("./middlewares/parseBody");
+const isConnected = require("./middlewares/isConnected");
+
+const responseServer = require("./utils/responseServer");
+const mongo = require("./db/index");
 
 const router = express.Router();
 
 router.use(express.json());
 router.use("/signup", parseBody);
 router.use("/login", parseBody);
-
+router.use("/feed/:id", isConnected);
 
 router.post("/signup", async function (req, res) {
     if (req.bodyArray.length > 2) {
@@ -75,14 +77,15 @@ router.post("/login", async function (req, res) {
 });
 
 
-router.get("/:id", function (req, res) {
-    if (!req.headers.authorization) {
-        return responseServer(res, 401);
-    }
+router.get("/feed/:id", async function (req, res) {
+    const mClient = await mongo();
+    const cardsCol = mClient.db().collection("cards");
 
-    const [b, token] = req.headers.authorization.split(" ");
-    if (b !== "Bearer" || !token || token.split(".").length !== 3) {
-        return responseServer(res, 400);
-    }
+    const cards = await cardsCol.find({}, {limit: 20}).toArray();
+    return responseServer(res, 200, {
+        modifyResponse: {
+            posts: cards
+        }
+    });
 });
 module.exports = router;
