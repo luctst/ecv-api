@@ -88,4 +88,39 @@ router.get("/feed/:id", async function (req, res) {
         }
     });
 });
+
+router.post("/feed/:id", async function (req, res) {
+    const bodyArray = Object.keys(req.body);
+
+    if (bodyArray.length === 0) {
+        return responseServer(res, 400, {
+            content: "Missing content-type request header."
+        })
+    }
+
+    if (bodyArray.length > 1) {
+        return responseServer(res, 400);
+    }
+
+    if (bodyArray[0] !== "content") {
+        return responseServer(res, 400);
+    }
+
+    const mClient = await mongo();
+    const cardsCol = mClient.db().collection("cards");
+
+    await cardsCol.insertOne({
+        content: req.body.content,
+        author: req.params.id
+    });
+
+    const cards = await cardsCol.find({}, {limit: 20});
+
+    return responseServer(res, 200, {
+        modifyResponse: {
+            posts: cards
+        }
+    })
+});
+
 module.exports = router;
