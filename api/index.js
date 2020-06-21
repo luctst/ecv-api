@@ -13,12 +13,13 @@ router.use(express.json());
 router.use("/signup", parseBody);
 router.use("/login", parseBody);
 
+
 router.post("/signup", async function (req, res) {
-    if (bodyArray.length > 2) {
+    if (req.bodyArray.length > 2) {
         return responseServer(res, 400);
     }
 
-    if (!bodyArray.includes("pseudo") || !bodyArray.includes("pswd")) {
+    if (!req.bodyArray.includes("pseudo") || !req.bodyArray.includes("pswd")) {
         return responseServer(res, 400);
     }
 
@@ -45,11 +46,11 @@ router.post("/signup", async function (req, res) {
 });
 
 router.post("/login", async function (req, res) {
-    if (bodyArray.length > 2) {
+    if (req.bodyArray.length > 2) {
         return responseServer(res, 400);
     }
 
-    if (!bodyArray.includes("pseudo") || !bodyArray.includes("pswd")) {
+    if (!req.bodyArray.includes("pseudo") || !req.bodyArray.includes("pswd")) {
         return responseServer(res, 400);
     }
 
