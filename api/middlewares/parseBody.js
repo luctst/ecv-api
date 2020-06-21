@@ -1,4 +1,4 @@
-const responseServer = require("./responseServer");
+const responseServer = require("../utils/responseServer");
 
 module.exports = function (req, res, next) {
     const bodyArray = Object.keys(req.body);
