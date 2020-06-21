@@ -3,7 +3,7 @@ const {MongoClient} = require("mongodb");
 
 let client = null;
 
-module.exports = async function ConnecMongo() {
+module.exports = async function ConnectMongo() {
     if (client) {
         return client;
     }
